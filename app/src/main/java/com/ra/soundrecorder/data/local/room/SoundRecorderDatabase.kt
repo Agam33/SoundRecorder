@@ -6,7 +6,7 @@ import com.ra.soundrecorder.data.local.entity.SoundRecordEntity
 
 @Database(
     entities = [SoundRecordEntity::class],
-    exportSchema = true,
+    exportSchema = false,
     version = 1
 )
 abstract class SoundRecorderDatabase: RoomDatabase() {

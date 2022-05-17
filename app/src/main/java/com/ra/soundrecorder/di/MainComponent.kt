@@ -8,12 +8,15 @@ import javax.inject.Singleton
 
 @Singleton
 @Component(
-    modules = [RepositoryModule::class]
+    modules = [
+        RepositoryModule::class,
+        ViewModelModule::class,
+    ]
 )
-interface CoreComponent {
+interface MainComponent {
     @Component.Factory
     interface Factory {
-        fun create(@BindsInstance context: Context): CoreComponent
+        fun create(@BindsInstance context: Context): com.ra.soundrecorder.di.MainComponent
     }
 
     fun provideRepository(): ISoundRecordRepository

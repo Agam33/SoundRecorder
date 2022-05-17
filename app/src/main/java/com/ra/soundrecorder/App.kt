@@ -1,10 +1,11 @@
 package com.ra.soundrecorder
 
 import android.app.Application
+import com.ra.soundrecorder.di.DaggerMainComponent
+import com.ra.soundrecorder.di.MainComponent
 
-class App: Application() {
-
-    override fun onCreate() {
-        super.onCreate()
+open class App: Application() {
+    val mainComponent: MainComponent by lazy {
+        DaggerMainComponent.factory().create(applicationContext)
     }
 }
