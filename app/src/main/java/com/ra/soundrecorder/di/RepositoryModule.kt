@@ -1,0 +1,14 @@
+package com.ra.soundrecorder.di
+
+import com.ra.soundrecorder.data.ISoundRecordRepository
+import com.ra.soundrecorder.data.SoundRecordRepository
+import dagger.Binds
+import dagger.Module
+
+@Module(includes = [DatabaseModule::class])
+abstract class RepositoryModule {
+    @Binds
+    abstract fun provideRepository(
+        soundRecordRepository: SoundRecordRepository
+    ): ISoundRecordRepository
+}
