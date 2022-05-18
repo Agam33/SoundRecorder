@@ -10,4 +10,10 @@ object DataMapper {
             soundRecordEntity.name,
             soundRecordEntity.duration
     )
+    fun modelToEntity(soundRecord: SoundRecord) =
+        SoundRecordEntity(
+            soundRecord.id,
+            soundRecord.name,
+            soundRecord.duration
+        )
 }
