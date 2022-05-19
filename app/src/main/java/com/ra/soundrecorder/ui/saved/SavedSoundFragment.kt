@@ -6,12 +6,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.ra.soundrecorder.R
+import com.ra.soundrecorder.adapter.SavedSoundAdapter
+import com.ra.soundrecorder.databinding.FragmentSavedSoundBinding
 
 class SavedSoundFragment : Fragment() {
 
+    private var _binding: FragmentSavedSoundBinding? = null
+    private val binding get() = _binding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        setupRecyclerView()
     }
 
     override fun onCreateView(
@@ -19,7 +24,23 @@ class SavedSoundFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_saved_sound, container, false)
+        _binding = FragmentSavedSoundBinding.inflate(inflater, container, false)
+        return binding?.root
+    }
+
+    private fun setupRecyclerView() {
+        binding?.let {
+            it.rvSoundList.adapter = SavedSoundAdapter(
+                ArrayList() // TODO: Empty list
+            ) {
+
+            }
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 
 }
