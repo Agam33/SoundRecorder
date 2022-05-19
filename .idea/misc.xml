@@ -3,9 +3,11 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Android/personal-project/SoundRecorder/app/src/main/res/drawable/ic_baseline_play_circle_outline_24.xml" value="0.219" />
+        <entry key="..\:/Android/personal-project/SoundRecorder/app/src/main/res/drawable/ic_baseline_stop_24.xml" value="0.219" />
         <entry key="..\:/Android/personal-project/SoundRecorder/app/src/main/res/layout/activity_main.xml" value="0.34375" />
         <entry key="..\:/Android/personal-project/SoundRecorder/app/src/main/res/layout/fragment_recorder.xml" value="0.34375" />
-        <entry key="..\:/Android/personal-project/SoundRecorder/app/src/main/res/layout/fragment_saved_sound.xml" value="0.34375" />
+        <entry key="..\:/Android/personal-project/SoundRecorder/app/src/main/res/layout/fragment_saved_sound.xml" value="0.33" />
         <entry key="..\:/Android/personal-project/SoundRecorder/app/src/main/res/layout/item_saved_sound.xml" value="0.33" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_recorder.xml" value="0.28350677490234377" />
