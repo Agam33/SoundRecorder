@@ -6,10 +6,9 @@
     android:orientation="vertical"
     tools:context=".ui.recorder.RecorderFragment">
 
-    <TextView
+    <Chronometer
         android:gravity="center"
         android:textStyle="bold"
-        android:text="00 : 00"
         android:textSize="52sp"
         android:id="@+id/tv_current_time_record"
         android:layout_width="match_parent"

@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.ra.soundrecorder.R
 import com.ra.soundrecorder.adapter.SavedSoundAdapter
 import com.ra.soundrecorder.databinding.FragmentSavedSoundBinding
@@ -30,10 +31,14 @@ class SavedSoundFragment : Fragment() {
 
     private fun setupRecyclerView() {
         binding?.let {
-            it.rvSoundList.adapter = SavedSoundAdapter(
-                ArrayList() // TODO: Empty list
-            ) {
+            it.rvSoundList.apply {
+                LinearLayoutManager(context)
+                setHasFixedSize(true)
+                adapter = SavedSoundAdapter(
+                    ArrayList() // TODO: Empty list
+                ) {
 
+                }
             }
         }
     }
