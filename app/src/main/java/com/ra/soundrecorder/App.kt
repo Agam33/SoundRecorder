@@ -7,6 +7,7 @@ import timber.log.Timber
 
 
 open class App: Application() {
+
     val mainComponent: MainComponent by lazy {
         DaggerMainComponent.factory().create(applicationContext)
     }

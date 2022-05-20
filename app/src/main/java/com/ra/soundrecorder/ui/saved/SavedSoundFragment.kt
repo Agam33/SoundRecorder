@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.ra.soundrecorder.App
 import com.ra.soundrecorder.R
 import com.ra.soundrecorder.adapter.SavedSoundAdapter
 import com.ra.soundrecorder.databinding.FragmentSavedSoundBinding
@@ -17,6 +18,7 @@ class SavedSoundFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        (requireActivity() as App).mainComponent.inject(this)
         setupRecyclerView()
     }
 
