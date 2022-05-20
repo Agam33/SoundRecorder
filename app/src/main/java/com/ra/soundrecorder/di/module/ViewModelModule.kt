@@ -1,7 +1,8 @@
-package com.ra.soundrecorder.di
+package com.ra.soundrecorder.di.module
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.ra.soundrecorder.di.ViewModelKey
 import com.ra.soundrecorder.ui.ViewModelFactory
 import com.ra.soundrecorder.ui.recorder.RecorderViewModel
 import com.ra.soundrecorder.ui.saved.SavedSoundViewModel

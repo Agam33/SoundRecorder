@@ -6,4 +6,5 @@
     <string name="saved_file_tab">Saved File</string>
     <string name="recorder_tab">Recorder</string>
     <string name="default_file_name">rec-%d.mp4</string>
+    <string name="time_format_hh_mm_ss">%02d:%02d:%02d</string>
 </resources>

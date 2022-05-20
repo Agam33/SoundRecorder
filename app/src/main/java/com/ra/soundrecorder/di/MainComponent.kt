@@ -2,7 +2,8 @@ package com.ra.soundrecorder.di
 
 import android.content.Context
 import com.ra.soundrecorder.data.ISoundRecordRepository
-import com.ra.soundrecorder.databinding.FragmentSavedSoundBinding
+import com.ra.soundrecorder.di.module.RepositoryModule
+import com.ra.soundrecorder.di.module.ViewModelModule
 import com.ra.soundrecorder.service.RecordingService
 import com.ra.soundrecorder.ui.recorder.RecorderFragment
 import com.ra.soundrecorder.ui.saved.SavedSoundFragment
