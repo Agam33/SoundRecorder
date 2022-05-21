@@ -3,9 +3,11 @@ package com.ra.soundrecorder.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.ra.soundrecorder.R
 import com.ra.soundrecorder.databinding.ItemSavedSoundBinding
 import com.ra.soundrecorder.model.SoundRecord
 import com.ra.soundrecorder.utils.getTimeStringFormat
+import java.util.concurrent.TimeUnit
 
 class SavedSoundAdapter(
     private val itemList: List<SoundRecord> = ArrayList(),
@@ -17,8 +19,11 @@ class SavedSoundAdapter(
     ): RecyclerView.ViewHolder(binding.root) {
 
         fun bind(soundRecord: SoundRecord) = with(binding) {
+            val minutes = TimeUnit.MILLISECONDS.toMinutes(soundRecord.duration)
+            val seconds = TimeUnit.MILLISECONDS.toSeconds(soundRecord.duration)
+
             tvName.text = soundRecord.name
-            tvDuration.text = getTimeStringFormat(root.context, soundRecord.duration.toInt())
+            tvDuration.text = root.context.getString(R.string.time_format_mm_ss, minutes, seconds)
             root.setOnClickListener { onItemClick(soundRecord) }
         }
     }

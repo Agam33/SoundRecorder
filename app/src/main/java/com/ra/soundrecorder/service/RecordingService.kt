@@ -8,27 +8,26 @@ import android.content.Context
 import android.content.Intent
 import android.media.MediaRecorder
 import android.os.Build
+import android.os.SystemClock
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.asLiveData
 import com.ra.soundrecorder.App
 import com.ra.soundrecorder.R
 import com.ra.soundrecorder.data.SoundRecordRepository
 import com.ra.soundrecorder.model.SoundRecord
 import com.ra.soundrecorder.ui.recorder.RecorderFragment
 import com.ra.soundrecorder.utils.RecordServiceEvent
+import com.ra.soundrecorder.utils.createFile
 import com.ra.soundrecorder.utils.getTimeStringFormat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.io.File
 import javax.inject.Inject
 
 @RequiresApi(Build.VERSION_CODES.S)
@@ -37,9 +36,6 @@ class RecordingService: LifecycleService() {
 
     @Inject
     lateinit var repository: SoundRecordRepository
-
-    private var mFilePath: File? = null
-    private var mFileName: String? = null
 
     private var mediaRecorder: MediaRecorder? = null
 
@@ -57,15 +53,14 @@ class RecordingService: LifecycleService() {
         super.onCreate()
         (application as App).mainComponent.inject(this)
         createNotification()
-        observer()
     }
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
         intent.let {
             when(it?.action) {
                 START_SERVICE -> {
                     startTimer()
-                    observer()
                     startRecording()
                 }
                 STOP_SERVICE -> {
@@ -76,11 +71,11 @@ class RecordingService: LifecycleService() {
         return START_STICKY
     }
 
-
     private fun startRecording() {
         startForeground(NOTIFY_ID, notificationBuilder.build())
         RECORD_SERVICE.postValue(RecordServiceEvent.PLAY)
 
+        @Suppress("DEPRECATION")
         mediaRecorder = MediaRecorder().apply {
             setAudioSource(MediaRecorder.AudioSource.MIC)
             setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
@@ -91,26 +86,22 @@ class RecordingService: LifecycleService() {
         try {
             mediaRecorder?.prepare()
             mediaRecorder?.start()
-            mStartingTimeMillis = System.currentTimeMillis()
+            mStartingTimeMillis = SystemClock.elapsedRealtime()
         } catch (e: Exception) {
             Timber.d("Error: $e")
         }
-    }
-
-    private fun observer() {
-        repository
-            .getAllRecord()
-            .asLiveData()
-            .observe(this) { setFilePathAndName(it.size) }
     }
 
     private fun stopRecording() {
         RECORD_SERVICE.postValue(RecordServiceEvent.STOP)
         isServiceRunning = false
 
+        val mFile = createFile(application)
+
         try {
-            mediaRecorder?.setOutputFile(mFilePath)
+            mediaRecorder?.setOutputFile(mFile)
             mediaRecorder?.stop()
+            mediaRecorder?.reset()
             mediaRecorder?.release()
             mediaRecorder = null
         } catch (e: Exception) {
@@ -118,39 +109,19 @@ class RecordingService: LifecycleService() {
         }
 
         val soundRecord = SoundRecord(
-            name = mFileName,
-            filePath = mFilePath?.path,
-            duration = (System.currentTimeMillis() - mStartingTimeMillis)
+            name = mFile.name,
+            filePath = mFile.absolutePath,
+            duration = SystemClock.elapsedRealtime() - mStartingTimeMillis
         )
 
-        Timber.d("File saved to Path: ${mFilePath?.absolutePath}\n File Name: $mFileName")
+        Timber.d("File saved to Path: ${mFile.path}\n File Name: ${mFile.name}")
 
-        Toast.makeText(baseContext, "File saved to ${mFilePath?.path}", Toast.LENGTH_SHORT).show()
+        Toast.makeText(baseContext, "File saved to ${mFile.absolutePath}", Toast.LENGTH_SHORT).show()
 
         coroutineScope.launch { repository.insertRecord(soundRecord) }
 
         stopForeground(true)
         stopSelf()
-    }
-
-    private fun setFilePathAndName(recordSize: Int) {
-        var count = 0
-
-        val mediaDir = application.externalMediaDirs.firstOrNull()?.let {
-            File(it, getString(R.string.app_name)).apply { mkdirs() }
-        }
-
-        do {
-            count++
-
-            mFileName = String.format(getString(R.string.default_file_name), recordSize + count)
-
-            mFilePath = if(
-                mediaDir != null && mediaDir.exists()
-            ) mediaDir else application.filesDir
-
-            val file = File(mFilePath, mFileName ?: "")
-        } while(file.exists() && !file.isDirectory)
     }
 
     private fun startTimer() {
@@ -185,7 +156,7 @@ class RecordingService: LifecycleService() {
             this,
             0,
             intent,
-            PendingIntent.FLAG_UPDATE_CURRENT
+            PendingIntent.FLAG_IMMUTABLE
         )
 
         notificationBuilder = NotificationCompat.Builder(this, NOTIFICATION_SERVICE_ID)
