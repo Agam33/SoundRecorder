@@ -7,4 +7,6 @@
     <string name="default_file_name">rec-%d.mp4</string>
     <string name="time_format_mm_ss">%02d:%02d</string>
     <string name="default_record_time">00:00</string>
+    <string name="txt_play">Play</string>
+    <string name="txt_stop">Stop</string>
 </resources>

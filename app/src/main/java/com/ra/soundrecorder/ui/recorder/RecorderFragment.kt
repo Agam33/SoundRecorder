@@ -49,41 +49,40 @@ class RecorderFragment : Fragment() {
 
     private fun observer() {
         RecordingService.recordService.observe(viewLifecycleOwner) {
-            setupUI(it)
+            updateUI(it)
         }
     }
 
     private fun actionView() {
         binding?.btnPlayOrStop?.setOnClickListener {
             if(!isServiceRunning) {
-                service(START_SERVICE)
+                actionService(START_SERVICE)
                 Timber.d("Play")
             } else {
-                service(STOP_SERVICE)
+                actionService(STOP_SERVICE)
                 Timber.d("Stop")
             }
         }
     }
 
-    private fun setupUI(event: RecordServiceEvent) {
+    private fun updateUI(event: RecordServiceEvent) {
         when(event) {
             is RecordServiceEvent.PLAY -> {
                 isServiceRunning = true
-                binding?.btnPlayOrStop?.text = "Stop"
+                binding?.btnPlayOrStop?.text = getString(R.string.txt_play)
                 binding?.tvCurrentTimeRecord?.base = SystemClock.elapsedRealtime()
                 binding?.tvCurrentTimeRecord?.start()
             }
-            is RecordServiceEvent.PAUSE ->{}
             is RecordServiceEvent.STOP -> {
                 isServiceRunning = false
-                binding?.btnPlayOrStop?.text = "Play"
+                binding?.btnPlayOrStop?.text = getString(R.string.txt_stop)
                 binding?.tvCurrentTimeRecord?.base = SystemClock.elapsedRealtime()
                 binding?.tvCurrentTimeRecord?.stop()
             }
         }
     }
 
-    private fun service(action: String) {
+    private fun actionService(action: String) {
         activity?.startService(
             Intent(context, RecordingService::class.java).apply {
                 this.action = action

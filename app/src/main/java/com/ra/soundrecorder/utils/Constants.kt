@@ -9,7 +9,6 @@ import java.util.*
 
 sealed class RecordServiceEvent {
     object PLAY: RecordServiceEvent()
-    object PAUSE: RecordServiceEvent()
     object STOP: RecordServiceEvent()
 }
 
@@ -20,22 +19,21 @@ val timeStamp: String = SimpleDateFormat(
     Locale.US
 ).format(System.currentTimeMillis())
 
-fun createFile(application: Application): File {
-    val mediaDir = application.externalMediaDirs.firstOrNull()?.let {
-        File(it, application.resources.getString(R.string.file_record)).apply { mkdirs() }
-    }
+fun createRecordFile(application: Application): File {
+    var count = 0
+    var resultFile: File
+    do {
+        count++
+        val mediaDir = application.externalMediaDirs.firstOrNull()?.let {
+            File(it, application.resources.getString(R.string.file_record)).apply { mkdirs() }
+        }
 
-    val outputDirectory = if (
-        mediaDir != null && mediaDir.exists()
-    ) mediaDir else application.filesDir
+        val outputDirectory = if (
+            mediaDir != null && mediaDir.exists()
+        ) mediaDir else application.filesDir
 
-    return File(outputDirectory, "$timeStamp.mp4")
-}
+        resultFile = File(outputDirectory, "rec-${count}.mp4")
+    } while (resultFile.exists() && !resultFile.isDirectory)
 
-fun getTimeStringFormat(
-    context: Context,
-    i: Int
-): String {
-    val minute = i / 60
-    return String.format(context.getString(R.string.time_format_mm_ss, minute, i))
+    return resultFile
 }

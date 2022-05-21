@@ -8,7 +8,6 @@ import android.content.Context
 import android.content.Intent
 import android.media.MediaRecorder
 import android.os.Build
-import android.os.SystemClock
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
@@ -19,15 +18,15 @@ import com.ra.soundrecorder.App
 import com.ra.soundrecorder.R
 import com.ra.soundrecorder.data.SoundRecordRepository
 import com.ra.soundrecorder.model.SoundRecord
-import com.ra.soundrecorder.ui.recorder.RecorderFragment
+import com.ra.soundrecorder.ui.MainActivity
 import com.ra.soundrecorder.utils.RecordServiceEvent
-import com.ra.soundrecorder.utils.createFile
-import com.ra.soundrecorder.utils.getTimeStringFormat
+import com.ra.soundrecorder.utils.createRecordFile
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.io.File
 import javax.inject.Inject
 
 @RequiresApi(Build.VERSION_CODES.S)
@@ -40,6 +39,8 @@ class RecordingService: LifecycleService() {
     private var mediaRecorder: MediaRecorder? = null
 
     private var mStartingTimeMillis: Long = 0
+
+    private var mFile: File? = null
 
     private val coroutineScope = CoroutineScope(IO)
 
@@ -76,11 +77,14 @@ class RecordingService: LifecycleService() {
         RECORD_SERVICE.postValue(RecordServiceEvent.PLAY)
         mStartingTimeMillis = System.currentTimeMillis()
 
+        mFile = createRecordFile(application)
+
         @Suppress("DEPRECATION")
         mediaRecorder = MediaRecorder().apply {
             setAudioSource(MediaRecorder.AudioSource.MIC)
             setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
             setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
+            setOutputFile(mFile)
             setAudioSamplingRate(44100)
             setAudioEncodingBitRate(192000)
         }
@@ -96,27 +100,19 @@ class RecordingService: LifecycleService() {
         RECORD_SERVICE.postValue(RecordServiceEvent.STOP)
         isServiceRunning = false
 
-        val mFile = createFile(application)
-
-        try {
-            mediaRecorder?.setOutputFile(mFile)
-            mediaRecorder?.stop()
-            mediaRecorder?.reset()
-            mediaRecorder?.release()
-            mediaRecorder = null
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+        mediaRecorder?.stop()
+        mediaRecorder?.release()
+        mediaRecorder = null
 
         val soundRecord = SoundRecord(
-            name = mFile.name,
-            filePath = mFile.absolutePath,
+            name = mFile?.name,
+            filePath = mFile?.absolutePath,
             duration = (System.currentTimeMillis() - mStartingTimeMillis)
         )
 
-        Timber.d("File saved to Path: ${mFile.path}\n File Name: ${mFile.name}")
+        Timber.d("File saved to Path: ${mFile?.path}\n File Name: ${mFile?.name}")
 
-        Toast.makeText(baseContext, "File saved to ${mFile.absolutePath}", Toast.LENGTH_SHORT).show()
+        Toast.makeText(baseContext, "File saved to ${mFile?.absolutePath}", Toast.LENGTH_SHORT).show()
 
         coroutineScope.launch { repository.insertRecord(soundRecord) }
 
@@ -126,12 +122,13 @@ class RecordingService: LifecycleService() {
 
     private fun startTimer() {
         coroutineScope.launch {
-            var i = 1
+            var second = 0
             while (isServiceRunning) {
                 delay(1000)
-                val time = getTimeStringFormat(baseContext, i)
+                second++
+                val minute = second / 60
+                val time = String.format(baseContext.getString(R.string.time_format_mm_ss), minute, second)
                 showNotification(time)
-                i++
             }
         }
     }
@@ -148,7 +145,7 @@ class RecordingService: LifecycleService() {
     private fun createNotification() {
         notificationManager = baseContext?.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        val intent = Intent(this, RecorderFragment::class.java).apply {
+        val intent = Intent(this, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
 

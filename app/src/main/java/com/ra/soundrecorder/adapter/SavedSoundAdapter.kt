@@ -6,8 +6,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.ra.soundrecorder.R
 import com.ra.soundrecorder.databinding.ItemSavedSoundBinding
 import com.ra.soundrecorder.model.SoundRecord
-import com.ra.soundrecorder.utils.getTimeStringFormat
-import java.util.concurrent.TimeUnit
 
 class SavedSoundAdapter(
     private val itemList: List<SoundRecord> = ArrayList(),
