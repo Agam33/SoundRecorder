@@ -19,8 +19,8 @@ class SavedSoundAdapter(
     ): RecyclerView.ViewHolder(binding.root) {
 
         fun bind(soundRecord: SoundRecord) = with(binding) {
-            val minutes = TimeUnit.MILLISECONDS.toMinutes(soundRecord.duration)
-            val seconds = TimeUnit.MILLISECONDS.toSeconds(soundRecord.duration)
+            val minutes = (soundRecord.duration / 1000) / 60
+            val seconds = (soundRecord.duration / 1000) % 60
 
             tvName.text = soundRecord.name
             tvDuration.text = root.context.getString(R.string.time_format_mm_ss, minutes, seconds)

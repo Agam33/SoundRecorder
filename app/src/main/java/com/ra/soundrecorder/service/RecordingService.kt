@@ -74,6 +74,7 @@ class RecordingService: LifecycleService() {
     private fun startRecording() {
         startForeground(NOTIFY_ID, notificationBuilder.build())
         RECORD_SERVICE.postValue(RecordServiceEvent.PLAY)
+        mStartingTimeMillis = System.currentTimeMillis()
 
         @Suppress("DEPRECATION")
         mediaRecorder = MediaRecorder().apply {
@@ -86,7 +87,6 @@ class RecordingService: LifecycleService() {
         try {
             mediaRecorder?.prepare()
             mediaRecorder?.start()
-            mStartingTimeMillis = SystemClock.elapsedRealtime()
         } catch (e: Exception) {
             Timber.d("Error: $e")
         }
@@ -111,7 +111,7 @@ class RecordingService: LifecycleService() {
         val soundRecord = SoundRecord(
             name = mFile.name,
             filePath = mFile.absolutePath,
-            duration = SystemClock.elapsedRealtime() - mStartingTimeMillis
+            duration = (System.currentTimeMillis() - mStartingTimeMillis)
         )
 
         Timber.d("File saved to Path: ${mFile.path}\n File Name: ${mFile.name}")
