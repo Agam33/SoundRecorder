@@ -66,7 +66,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
     companion object {
         private val TAB_TITLE = intArrayOf(R.string.recorder_tab, R.string.saved_file_tab)
         private val REQUIRED_PERMISSION = arrayOf(Manifest.permission.RECORD_AUDIO)

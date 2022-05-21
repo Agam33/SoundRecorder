@@ -1,6 +1,7 @@
 package com.ra.soundrecorder.ui.saved
 
 import android.content.Context
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.provider.ContactsContract
 import androidx.fragment.app.Fragment
@@ -17,6 +18,8 @@ import com.ra.soundrecorder.databinding.FragmentSavedSoundBinding
 import com.ra.soundrecorder.model.SoundRecord
 import com.ra.soundrecorder.ui.ViewModelFactory
 import com.ra.soundrecorder.utils.DataDummy
+import timber.log.Timber
+import java.io.IOException
 import javax.inject.Inject
 
 class SavedSoundFragment : Fragment() {
@@ -29,6 +32,8 @@ class SavedSoundFragment : Fragment() {
     private var _binding: FragmentSavedSoundBinding? = null
     private val binding get() = _binding
 
+    private var mediaPlayer: MediaPlayer? = null
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         (requireActivity().application as App).mainComponent.inject(this)
@@ -38,7 +43,6 @@ class SavedSoundFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         _binding = FragmentSavedSoundBinding.inflate(inflater, container, false)
         return binding?.root
     }
@@ -58,8 +62,31 @@ class SavedSoundFragment : Fragment() {
         binding?.rvSoundList?.apply {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(requireContext())
-            adapter =  SavedSoundAdapter(item) {
-                Toast.makeText(context, "${it.name}", Toast.LENGTH_SHORT).show()
+            adapter =  SavedSoundAdapter(
+                itemList = item,
+                onItemClickCallback = { soundRecord ->
+                    Toast.makeText(context, "${soundRecord.name}", Toast.LENGTH_SHORT).show()
+                },
+                onPlay = { soundRecord ->
+                    startPlaying(soundRecord.filePath)
+                },
+                onStop = { stopPlaying() }
+            )
+        }
+    }
+
+    private fun stopPlaying() {
+        mediaPlayer?.release()
+    }
+
+    private fun startPlaying(filePath: String?) {
+        mediaPlayer = MediaPlayer().apply {
+            try {
+                setDataSource(filePath)
+                prepare()
+                start()
+            } catch (e: IOException) {
+                Timber.e("$e")
             }
         }
     }
@@ -67,5 +94,6 @@ class SavedSoundFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
+        mediaPlayer = null
     }
 }

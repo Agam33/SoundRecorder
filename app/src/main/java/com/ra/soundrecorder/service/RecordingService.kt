@@ -74,7 +74,7 @@ class RecordingService: LifecycleService() {
 
     private fun startRecording() {
         startForeground(NOTIFY_ID, notificationBuilder.build())
-        RECORD_SERVICE.postValue(RecordServiceEvent.PLAY)
+        RECORD_SERVICE_EVENT.postValue(RecordServiceEvent.PLAY)
         mStartingTimeMillis = System.currentTimeMillis()
 
         mFile = createRecordFile(application)
@@ -97,7 +97,7 @@ class RecordingService: LifecycleService() {
     }
 
     private fun stopRecording() {
-        RECORD_SERVICE.postValue(RecordServiceEvent.STOP)
+        RECORD_SERVICE_EVENT.postValue(RecordServiceEvent.STOP)
         isServiceRunning = false
 
         mediaRecorder?.stop()
@@ -167,8 +167,8 @@ class RecordingService: LifecycleService() {
     }
 
     companion object {
-        private var RECORD_SERVICE = MutableLiveData<RecordServiceEvent>()
-        val recordService: LiveData<RecordServiceEvent> = RECORD_SERVICE
+        private var RECORD_SERVICE_EVENT = MutableLiveData<RecordServiceEvent>()
+        val recordServiceEvent: LiveData<RecordServiceEvent> = RECORD_SERVICE_EVENT
         const val NOTIFICATION_SERVICE_ID = "service-id"
         const val NOTIFICATION_NAME = "recording-service"
         const val NOTIFY_ID = 10

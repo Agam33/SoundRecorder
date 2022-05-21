@@ -36,7 +36,6 @@ class RecorderFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         _binding = FragmentRecorderBinding.inflate(inflater, container, false)
         return binding?.root
     }
@@ -48,7 +47,7 @@ class RecorderFragment : Fragment() {
     }
 
     private fun observer() {
-        RecordingService.recordService.observe(viewLifecycleOwner) {
+        RecordingService.recordServiceEvent.observe(viewLifecycleOwner) {
             updateUI(it)
         }
     }
