@@ -53,8 +53,8 @@ class RecordingService: LifecycleService() {
     private lateinit var notificationBuilder: NotificationCompat.Builder
 
     override fun onCreate() {
-        (application as App).mainComponent.inject(this)
         super.onCreate()
+        (application as App).mainComponent.inject(this)
         createNotification()
     }
 

@@ -10,12 +10,15 @@
         android:gravity="center"
         android:textStyle="bold"
         android:textSize="52sp"
+        android:text="@string/default_record_time"
         android:id="@+id/tv_current_time_record"
         android:layout_width="match_parent"
         android:layout_height="400dp"/>
-    <ImageButton
-        android:background="@null"
-        android:src="@drawable/ic_baseline_mic_64"
+    <Button
+        android:id="@+id/btn_play_or_stop"
+        android:text="play"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
