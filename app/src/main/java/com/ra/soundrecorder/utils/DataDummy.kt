@@ -6,12 +6,12 @@ object DataDummy {
     fun getAllRecord(): List<SoundRecord> =
         ArrayList<SoundRecord>().apply {
             for(i in 0..10) {
-                SoundRecord(
+               add( SoundRecord(
                     i,
                     "rec-$i",
                     1000,
                     ""
-                )
+                ))
             }
         }
 }

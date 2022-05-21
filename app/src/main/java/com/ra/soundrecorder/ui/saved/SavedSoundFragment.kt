@@ -29,9 +29,6 @@ class SavedSoundFragment : Fragment() {
     private var _binding: FragmentSavedSoundBinding? = null
     private val binding get() = _binding
 
-    private lateinit var savedSoundAdapter: SavedSoundAdapter
-
-
     override fun onAttach(context: Context) {
         super.onAttach(context)
         (requireActivity().application as App).mainComponent.inject(this)
@@ -50,22 +47,20 @@ class SavedSoundFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         if(activity != null) {
             observer()
-            setListSavedSound(DataDummy.getAllRecord())
         }
     }
 
     private fun observer() {
-      //  viewModel.getAllRecord().observe(viewLifecycleOwner,::setListSavedSound)
+        viewModel.getAllRecord().observe(viewLifecycleOwner,::setListSavedSound)
     }
 
     private fun setListSavedSound(item: List<SoundRecord>) {
-        savedSoundAdapter = SavedSoundAdapter(item) {
-            Toast.makeText(context, "${it.name}", Toast.LENGTH_SHORT).show()
-        }
         binding?.rvSoundList?.apply {
-            adapter = savedSoundAdapter
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(requireContext())
+            adapter =  SavedSoundAdapter(item) {
+                Toast.makeText(context, "${it.name}", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 

@@ -10,6 +10,7 @@ import android.media.MediaRecorder
 import android.os.Build
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.LiveData
@@ -56,15 +57,15 @@ class RecordingService: LifecycleService() {
         super.onCreate()
         (application as App).mainComponent.inject(this)
         createNotification()
+        observer()
     }
-
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
         intent.let {
             when(it?.action) {
                 START_SERVICE -> {
-                    observer()
                     startTimer()
+                    observer()
                     startRecording()
                 }
                 STOP_SERVICE -> {
@@ -75,19 +76,18 @@ class RecordingService: LifecycleService() {
         return START_STICKY
     }
 
+
     private fun startRecording() {
         startForeground(NOTIFY_ID, notificationBuilder.build())
         RECORD_SERVICE.postValue(RecordServiceEvent.PLAY)
 
-        mediaRecorder = MediaRecorder(baseContext).apply {
+        mediaRecorder = MediaRecorder().apply {
             setAudioSource(MediaRecorder.AudioSource.MIC)
             setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
             setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
             setAudioSamplingRate(44100)
             setAudioEncodingBitRate(192000)
-            setOutputFile(mFilePath)
         }
-
         try {
             mediaRecorder?.prepare()
             mediaRecorder?.start()
@@ -107,9 +107,15 @@ class RecordingService: LifecycleService() {
     private fun stopRecording() {
         RECORD_SERVICE.postValue(RecordServiceEvent.STOP)
         isServiceRunning = false
-        mediaRecorder?.stop()
-        mediaRecorder = null
-        mediaRecorder?.release()
+
+        try {
+            mediaRecorder?.setOutputFile(mFilePath)
+            mediaRecorder?.stop()
+            mediaRecorder?.release()
+            mediaRecorder = null
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
 
         val soundRecord = SoundRecord(
             name = mFileName,
@@ -117,7 +123,7 @@ class RecordingService: LifecycleService() {
             duration = (System.currentTimeMillis() - mStartingTimeMillis)
         )
 
-        Timber.d("File saved to ${mFilePath?.path}")
+        Timber.d("File saved to Path: ${mFilePath?.absolutePath}\n File Name: $mFileName")
 
         Toast.makeText(baseContext, "File saved to ${mFilePath?.path}", Toast.LENGTH_SHORT).show()
 
@@ -129,21 +135,22 @@ class RecordingService: LifecycleService() {
 
     private fun setFilePathAndName(recordSize: Int) {
         var count = 0
+
+        val mediaDir = application.externalMediaDirs.firstOrNull()?.let {
+            File(it, getString(R.string.app_name)).apply { mkdirs() }
+        }
+
         do {
             count++
 
             mFileName = String.format(getString(R.string.default_file_name), recordSize + count)
-
-            val mediaDir = application.externalMediaDirs.firstOrNull()?.let {
-                File(it, getString(R.string.app_name)).apply { mkdirs() }
-            }
 
             mFilePath = if(
                 mediaDir != null && mediaDir.exists()
             ) mediaDir else application.filesDir
 
             val file = File(mFilePath, mFileName ?: "")
-        } while(file.exists())
+        } while(file.exists() && !file.isDirectory)
     }
 
     private fun startTimer() {

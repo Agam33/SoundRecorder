@@ -4,12 +4,14 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.os.SystemClock
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import com.ra.soundrecorder.App
+import com.ra.soundrecorder.R
 import com.ra.soundrecorder.databinding.FragmentRecorderBinding
 import com.ra.soundrecorder.service.RecordingService
 import com.ra.soundrecorder.service.RecordingService.Companion.START_SERVICE
@@ -68,12 +70,14 @@ class RecorderFragment : Fragment() {
             is RecordServiceEvent.PLAY -> {
                 isServiceRunning = true
                 binding?.btnPlayOrStop?.text = "Stop"
+                binding?.tvCurrentTimeRecord?.base = SystemClock.elapsedRealtime()
                 binding?.tvCurrentTimeRecord?.start()
             }
             is RecordServiceEvent.PAUSE ->{}
             is RecordServiceEvent.STOP -> {
                 isServiceRunning = false
                 binding?.btnPlayOrStop?.text = "Play"
+                binding?.tvCurrentTimeRecord?.base = SystemClock.elapsedRealtime()
                 binding?.tvCurrentTimeRecord?.stop()
             }
         }
