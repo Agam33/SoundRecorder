@@ -124,11 +124,11 @@ class RecordingService: LifecycleService() {
         coroutineScope.launch {
             var second = 0
             while (isServiceRunning) {
-                delay(1000)
-                second++
                 val minute = second / 60
                 val time = String.format(baseContext.getString(R.string.time_format_mm_ss), minute, second)
                 showNotification(time)
+                second++
+                delay(1000)
             }
         }
     }

@@ -53,13 +53,13 @@ class RecorderFragment : Fragment() {
     }
 
     private fun actionView() {
-        binding?.btnPlayOrStop?.setOnClickListener {
+        binding?.btnMic?.setOnClickListener {
             if(!isServiceRunning) {
                 actionService(START_SERVICE)
-                Timber.d("Play")
+                Timber.d(getString(R.string.txt_play))
             } else {
                 actionService(STOP_SERVICE)
-                Timber.d("Stop")
+                Timber.d(getString(R.string.txt_stop))
             }
         }
     }
@@ -68,13 +68,13 @@ class RecorderFragment : Fragment() {
         when(event) {
             is RecordServiceEvent.PLAY -> {
                 isServiceRunning = true
-                binding?.btnPlayOrStop?.text = getString(R.string.txt_play)
+                binding?.btnMic?.playAnimation()
                 binding?.tvCurrentTimeRecord?.base = SystemClock.elapsedRealtime()
                 binding?.tvCurrentTimeRecord?.start()
             }
             is RecordServiceEvent.STOP -> {
                 isServiceRunning = false
-                binding?.btnPlayOrStop?.text = getString(R.string.txt_stop)
+                binding?.btnMic?.cancelAnimation()
                 binding?.tvCurrentTimeRecord?.base = SystemClock.elapsedRealtime()
                 binding?.tvCurrentTimeRecord?.stop()
             }

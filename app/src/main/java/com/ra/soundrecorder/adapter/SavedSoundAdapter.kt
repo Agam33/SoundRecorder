@@ -2,17 +2,15 @@ package com.ra.soundrecorder.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.lifecycle.LifecycleCoroutineScope
-import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import com.ra.soundrecorder.R
 import com.ra.soundrecorder.databinding.ItemSavedSoundBinding
 import com.ra.soundrecorder.model.SoundRecord
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.concurrent.TimeUnit
 
 class SavedSoundAdapter(
     private val itemList: List<SoundRecord> = ArrayList(),
@@ -33,41 +31,42 @@ class SavedSoundAdapter(
             val seconds = (soundRecord.duration / 1000) % 60
             tvName.text = soundRecord.name
             tvDuration.text = root.context.getString(R.string.time_format_mm_ss, minutes, seconds)
-            progressBar.progress = 0
             progressBar.max = (soundRecord.duration / 1000).toInt()
             btnPlayOrStop.setOnClickListener {
                 isPlaying = if(!isPlaying) {
                     onPlay(soundRecord)
-                    btnPlayOrStop.setImageResource(changeImageBtn(false))
+                    btnPlayOrStop.setImageResource(changeImageBtn(true))
                     coroutineScope.launch {
                         runProgressBar(soundRecord.duration)
-                        btnPlayOrStop.setImageResource(changeImageBtn(true))
+                        btnPlayOrStop.setImageResource(changeImageBtn(false))
                         isPlaying = false
                         progressBar.progress = 0
                         tvDuration.text = root.context.getString(R.string.time_format_mm_ss, minutes, seconds)
                     }
                     true
                 } else {
-                    btnPlayOrStop.setImageResource(changeImageBtn(true))
+                    btnPlayOrStop.setImageResource(changeImageBtn(false))
                     onStop()
                     false
                 }
             }
-
             root.setOnClickListener { onItemClickCallback(soundRecord) }
         }
-        
-        private fun changeImageBtn(state: Boolean): Int =
-            if(state) R.drawable.ic_baseline_play_circle_outline_24
+
+        private fun changeImageBtn(play: Boolean): Int =
+            if(!play) R.drawable.ic_baseline_play_circle_outline_24
             else R.drawable.ic_baseline_stop_24
 
         private suspend fun runProgressBar(millis: Long) = with(binding) {
             var duration = (millis / 1000).toInt()
             var i = 1
-            while (isPlaying && duration > 0) {
+            while (isPlaying && duration >= 0) {
                 progressBar.progress = i++
-                tvDuration.text = root.context
-                    .getString(R.string.time_format_mm_ss, 0, duration)
+                tvDuration.text = root.context.getString(
+                    R.string.time_format_mm_ss,
+                    TimeUnit.SECONDS.toMinutes(duration.toLong()),
+                    duration % 60
+                )
                 delay(1000)
                 duration--
             }
