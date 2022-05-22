@@ -9,5 +9,6 @@ data class SoundRecordEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int,
     val name: String,
-    val duration: String,
+    val duration: Long,
+    val filePath: String,
 )

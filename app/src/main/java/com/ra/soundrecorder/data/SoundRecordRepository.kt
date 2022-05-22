@@ -35,5 +35,4 @@ class SoundRecordRepository @Inject constructor(
     override suspend fun insertRecord(record: SoundRecord) {
         localDataSource.insertRecord(DataMapper.modelToEntity(record))
     }
-
 }
