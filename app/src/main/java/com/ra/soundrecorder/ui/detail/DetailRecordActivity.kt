@@ -35,8 +35,8 @@ class DetailRecordActivity : AppCompatActivity() {
     private fun setChange(soundRecord: SoundRecord) = with(binding) {
         btnUpdateFile.setOnClickListener {
             val newName = edName.text.toString()
-            updateFile(newName, application) {
-                viewModel.updateSoundRecord(it)
+            updateFile(newName, soundRecord, application) { newSoundRecord ->
+                viewModel.updateSoundRecord(newSoundRecord)
                 Toast.makeText(this@DetailRecordActivity, "File updated", Toast.LENGTH_SHORT).show()
             }
             finish()

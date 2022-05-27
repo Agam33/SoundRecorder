@@ -46,14 +46,21 @@ fun deleteFile(filePath: String) {
 
 fun updateFile(
     newName: String,
+    soundRecord: SoundRecord,
     application: Application,
     setChange: (SoundRecord) -> Unit = {}
 ) {
-    val outputDir = File(application.externalMediaDirs.first(),
-        application.resources.getString(R.string.file_record)
-    )
+
+    val mediaDir = application.externalMediaDirs.first()
+
     val oldFile = File(soundRecord.filePath ?: "")
-    val newFile = File(outputDir, "$newName.mp4")
+    val newFile = File(mediaDir, "$newName.mp4")
     oldFile.renameTo(newFile)
-    setChange()
+    val newSoundRecord = SoundRecord(
+        soundRecord.id,
+        newName,
+        soundRecord.duration,
+        newFile.absolutePath
+    )
+    setChange(newSoundRecord)
 }

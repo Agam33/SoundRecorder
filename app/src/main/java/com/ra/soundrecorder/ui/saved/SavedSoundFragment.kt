@@ -69,6 +69,7 @@ class SavedSoundFragment : Fragment() {
                         putExtra(DETAIL_EXTRA_BUNDLE, soundRecord)
                     }
                     startActivity(intent)
+                    stopPlaying()
                 },
                 onItemLongClick = { soundRecord ->
                    deleteMessage(soundRecord)
