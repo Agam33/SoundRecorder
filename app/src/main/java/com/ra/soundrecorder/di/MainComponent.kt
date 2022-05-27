@@ -5,6 +5,7 @@ import com.ra.soundrecorder.data.ISoundRecordRepository
 import com.ra.soundrecorder.di.module.RepositoryModule
 import com.ra.soundrecorder.di.module.ViewModelModule
 import com.ra.soundrecorder.service.RecordingService
+import com.ra.soundrecorder.ui.detail.DetailRecordActivity
 import com.ra.soundrecorder.ui.recorder.RecorderFragment
 import com.ra.soundrecorder.ui.saved.SavedSoundFragment
 import dagger.BindsInstance
@@ -29,4 +30,5 @@ interface MainComponent {
     fun inject(recorderFragment: RecorderFragment)
     fun inject(savedSoundFragment: SavedSoundFragment)
     fun inject(recordingService: RecordingService)
+    fun inject(detailRecordActivity: DetailRecordActivity)
 }

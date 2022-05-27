@@ -15,7 +15,7 @@ object DataMapper {
 
     fun modelToEntity(soundRecord: SoundRecord) =
         SoundRecordEntity(
-            id = 0,
+            id = soundRecord.id,
             name = soundRecord.name ?: "",
             duration = soundRecord.duration,
             filePath = soundRecord.filePath ?: ""

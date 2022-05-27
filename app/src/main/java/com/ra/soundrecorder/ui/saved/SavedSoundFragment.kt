@@ -1,23 +1,23 @@
 package com.ra.soundrecorder.ui.saved
 
 import android.content.Context
+import android.content.Intent
 import android.media.MediaPlayer
 import android.os.Bundle
-import android.provider.ContactsContract
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.snackbar.Snackbar
 import com.ra.soundrecorder.App
-import com.ra.soundrecorder.R
 import com.ra.soundrecorder.adapter.SavedSoundAdapter
 import com.ra.soundrecorder.databinding.FragmentSavedSoundBinding
 import com.ra.soundrecorder.model.SoundRecord
+import com.ra.soundrecorder.ui.detail.DetailRecordActivity
+import com.ra.soundrecorder.ui.detail.DetailRecordActivity.Companion.DETAIL_EXTRA_BUNDLE
 import com.ra.soundrecorder.ui.ViewModelFactory
-import com.ra.soundrecorder.utils.DataDummy
+import com.ra.soundrecorder.utils.deleteFile
 import timber.log.Timber
 import java.io.IOException
 import javax.inject.Inject
@@ -64,13 +64,19 @@ class SavedSoundFragment : Fragment() {
             layoutManager = LinearLayoutManager(requireContext())
             adapter =  SavedSoundAdapter(
                 itemList = item,
-                onItemClickCallback = { soundRecord ->
-                    Toast.makeText(context, "${soundRecord.name}", Toast.LENGTH_SHORT).show()
+                onItemClick = { soundRecord ->
+                    val intent = Intent(requireContext(), DetailRecordActivity::class.java).apply {
+                        putExtra(DETAIL_EXTRA_BUNDLE, soundRecord)
+                    }
+                    startActivity(intent)
+                },
+                onItemLongClick = { soundRecord ->
+                   deleteMessage(soundRecord)
                 },
                 onPlay = { soundRecord ->
                     startPlaying(soundRecord.filePath)
                 },
-                onStop = { stopPlaying() }
+                onStop = { stopPlaying() },
             )
         }
     }
@@ -88,6 +94,21 @@ class SavedSoundFragment : Fragment() {
             } catch (e: IOException) {
                 Timber.e("$e")
             }
+        }
+    }
+
+    private fun deleteMessage(soundRecord: SoundRecord) {
+        binding?.root?.let { root ->
+            Snackbar.make(
+                requireContext(),
+                root,
+                "Are you sure want to delete this record?",
+                Snackbar.LENGTH_SHORT,
+            ).setAction("Yes") {
+                viewModel.deleteItem(soundRecord)
+                deleteFile(soundRecord.filePath ?: "")
+                Toast.makeText(requireContext(), "Record deleted", Toast.LENGTH_SHORT).show()
+            }.show()
         }
     }
 

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.ra.soundrecorder.di.ViewModelKey
 import com.ra.soundrecorder.ui.ViewModelFactory
+import com.ra.soundrecorder.ui.detail.DetailViewModel
 import com.ra.soundrecorder.ui.recorder.RecorderViewModel
 import com.ra.soundrecorder.ui.saved.SavedSoundViewModel
 import dagger.Binds
@@ -21,6 +22,11 @@ abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(RecorderViewModel::class)
     abstract fun bindRecorderViewModel(viewModel: RecorderViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(DetailViewModel::class)
+    abstract fun bindDetailViewModel(viewModel: DetailViewModel): ViewModel
 
     @Binds
     abstract fun bindViewModelFactory(factory: ViewModelFactory): ViewModelProvider.Factory

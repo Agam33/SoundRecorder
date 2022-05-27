@@ -1,7 +1,7 @@
 package com.ra.soundrecorder.adapter
 
-import android.view.LayoutInflater
-import android.view.ViewGroup
+import android.view.*
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.ra.soundrecorder.R
 import com.ra.soundrecorder.databinding.ItemSavedSoundBinding
@@ -14,9 +14,10 @@ import java.util.concurrent.TimeUnit
 
 class SavedSoundAdapter(
     private val itemList: List<SoundRecord> = ArrayList(),
-    private val onItemClickCallback: (SoundRecord) -> Unit = {},
+    private val onItemClick: (SoundRecord) -> Unit = {},
+    private val onItemLongClick: (SoundRecord) -> Unit = {},
     private val onPlay: (SoundRecord) -> Unit = {},
-    private val onStop: () -> Unit = {},
+    private val onStop: (SoundRecord) -> Unit = {},
     private val coroutineScope: CoroutineScope = CoroutineScope(Main)
 ): RecyclerView.Adapter<SavedSoundAdapter.MyViewHolder>() {
 
@@ -46,11 +47,15 @@ class SavedSoundAdapter(
                     true
                 } else {
                     btnPlayOrStop.setImageResource(changeImageBtn(false))
-                    onStop()
+                    onStop(soundRecord)
                     false
                 }
             }
-            root.setOnClickListener { onItemClickCallback(soundRecord) }
+            root.setOnClickListener { onItemClick(soundRecord) }
+            root.setOnLongClickListener { view ->
+                onItemLongClick(soundRecord)
+                true
+            }
         }
 
         private fun changeImageBtn(play: Boolean): Int =

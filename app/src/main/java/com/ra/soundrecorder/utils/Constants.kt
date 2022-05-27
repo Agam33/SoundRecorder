@@ -3,6 +3,7 @@ package com.ra.soundrecorder.utils
 import android.app.Application
 import android.content.Context
 import com.ra.soundrecorder.R
+import com.ra.soundrecorder.model.SoundRecord
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
@@ -36,4 +37,23 @@ fun createRecordFile(application: Application): File {
     } while (resultFile.exists() && !resultFile.isDirectory)
 
     return resultFile
+}
+
+fun deleteFile(filePath: String) {
+    val file = File(filePath)
+    file.delete()
+}
+
+fun updateFile(
+    newName: String,
+    application: Application,
+    setChange: (SoundRecord) -> Unit = {}
+) {
+    val outputDir = File(application.externalMediaDirs.first(),
+        application.resources.getString(R.string.file_record)
+    )
+    val oldFile = File(soundRecord.filePath ?: "")
+    val newFile = File(outputDir, "$newName.mp4")
+    oldFile.renameTo(newFile)
+    setChange()
 }

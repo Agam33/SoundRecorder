@@ -3,8 +3,10 @@ package com.ra.soundrecorder.ui.saved
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
 import com.ra.soundrecorder.data.SoundRecordRepository
 import com.ra.soundrecorder.model.SoundRecord
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class SavedSoundViewModel @Inject constructor(
@@ -13,4 +15,11 @@ class SavedSoundViewModel @Inject constructor(
 
     fun getAllRecord(): LiveData<List<SoundRecord>> =
         soundRecordRepository.getAllRecord().asLiveData()
+
+    fun deleteItem(item: SoundRecord) {
+        viewModelScope.launch {
+            soundRecordRepository.deleteRecord(item)
+        }
+    }
+
 }
