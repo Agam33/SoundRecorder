@@ -4,16 +4,14 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="../../../../../../layout/custom_preview.xml" value="0.14994934143870314" />
-        <entry key="..\:/Android/personal-project/SoundRecorder/app/src/main/res/layout/activity_detail_record.xml" value="0.25" />
         <entry key="..\:/Android/personal-project/SoundRecorder/app/src/main/res/layout/activity_main.xml" value="0.34375" />
         <entry key="..\:/Android/personal-project/SoundRecorder/app/src/main/res/layout/fragment_recorder.xml" value="0.34375" />
         <entry key="..\:/Android/personal-project/SoundRecorder/app/src/main/res/layout/fragment_saved_sound.xml" value="0.34375" />
         <entry key="..\:/Android/personal-project/SoundRecorder/app/src/main/res/layout/item_saved_sound.xml" value="0.33" />
-        <entry key="..\:/Android/personal-project/SoundRecorder/app/src/main/res/menu/saved_sound_menu.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_recorder.xml" value="0.28350677490234377" />
         <entry key="app/src/main/res/layout/fragment_saved_sound.xml" value="0.1" />
-        <entry key="app/src/main/res/layout/item_saved_sound.xml" value="0.33284149169921873" />
+        <entry key="app/src/main/res/layout/item_saved_sound.xml" value="0.1" />
       </map>
     </option>
   </component>

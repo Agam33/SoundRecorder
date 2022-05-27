@@ -13,13 +13,6 @@ sealed class RecordServiceEvent {
     object STOP: RecordServiceEvent()
 }
 
-private const val FILENAME_FORMAT = "hh:mm:ss"
-
-val timeStamp: String = SimpleDateFormat(
-    FILENAME_FORMAT,
-    Locale.US
-).format(System.currentTimeMillis())
-
 fun createRecordFile(application: Application): File {
     var count = 0
     var resultFile: File

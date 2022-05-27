@@ -1,7 +1,9 @@
 package com.ra.soundrecorder.adapter
 
-import android.view.*
-import androidx.appcompat.app.AppCompatActivity
+import android.media.MediaPlayer
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import android.widget.SeekBar
 import androidx.recyclerview.widget.RecyclerView
 import com.ra.soundrecorder.R
 import com.ra.soundrecorder.databinding.ItemSavedSoundBinding
@@ -10,14 +12,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.util.concurrent.TimeUnit
+import timber.log.Timber
+import java.io.IOException
 
 class SavedSoundAdapter(
     private val itemList: List<SoundRecord> = ArrayList(),
     private val onItemClick: (SoundRecord) -> Unit = {},
     private val onItemLongClick: (SoundRecord) -> Unit = {},
-    private val onPlay: (SoundRecord) -> Unit = {},
-    private val onStop: (SoundRecord) -> Unit = {},
     private val coroutineScope: CoroutineScope = CoroutineScope(Main)
 ): RecyclerView.Adapter<SavedSoundAdapter.MyViewHolder>() {
 
@@ -25,34 +26,45 @@ class SavedSoundAdapter(
         private val binding: ItemSavedSoundBinding
     ): RecyclerView.ViewHolder(binding.root) {
 
-        private var isPlaying: Boolean = false
+        private var mediaPlayer: MediaPlayer? = null
 
         fun bind(soundRecord: SoundRecord) = with(binding) {
             val minutes = (soundRecord.duration / 1000) / 60
             val seconds = (soundRecord.duration / 1000) % 60
+
             tvName.text = soundRecord.name
             tvDuration.text = root.context.getString(R.string.time_format_mm_ss, minutes, seconds)
-            progressBar.max = (soundRecord.duration / 1000).toInt()
+            seekBar.max = soundRecord.duration.toInt()
+
             btnPlayOrStop.setOnClickListener {
-                isPlaying = if(!isPlaying) {
-                    onPlay(soundRecord)
-                    btnPlayOrStop.setImageResource(changeImageBtn(true))
-                    coroutineScope.launch {
-                        runProgressBar(soundRecord.duration)
-                        btnPlayOrStop.setImageResource(changeImageBtn(false))
-                        isPlaying = false
-                        progressBar.progress = 0
-                        tvDuration.text = root.context.getString(R.string.time_format_mm_ss, minutes, seconds)
-                    }
-                    true
-                } else {
-                    btnPlayOrStop.setImageResource(changeImageBtn(false))
-                    onStop(soundRecord)
-                    false
-                }
+                checkStatusMediaPlayer(soundRecord)
             }
-            root.setOnClickListener { onItemClick(soundRecord) }
-            root.setOnLongClickListener { view ->
+
+            seekBar.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(
+                    seekBar: SeekBar?,
+                    progress: Int,
+                    fromUser: Boolean
+                ) {
+                    if(fromUser) {
+                        tvDuration.text = root.context.getString(
+                            R.string.time_format_mm_ss,
+                            (progress / 1000) / 60,
+                            (progress / 1000) % 60
+                        )
+                        mediaPlayer?.seekTo(progress)
+                    }
+                }
+
+                override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+                override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+            })
+
+            root.setOnClickListener {
+                onItemClick(soundRecord)
+                stopPlaying()
+            }
+            root.setOnLongClickListener {
                 onItemLongClick(soundRecord)
                 true
             }
@@ -62,18 +74,59 @@ class SavedSoundAdapter(
             if(!play) R.drawable.ic_baseline_play_circle_outline_24
             else R.drawable.ic_baseline_stop_24
 
-        private suspend fun runProgressBar(millis: Long) = with(binding) {
-            var duration = (millis / 1000).toInt()
-            var i = 1
-            while (isPlaying && duration >= 0) {
-                progressBar.progress = i++
+
+        private suspend fun runSeekBar() = with(binding) {
+            while (mediaPlayer?.isPlaying == true) {
+                try {
+                    val currentTime = mediaPlayer!!.currentPosition
+                    seekBar.progress = currentTime
+                    tvDuration.text = root.context.getString(
+                        R.string.time_format_mm_ss,
+                        (currentTime / 1000) / 60,
+                        (currentTime / 1000) % 60
+                    )
+                    delay(1000)
+                } catch (e: Exception) {
+                    seekBar.progress = 0
+                }
+            }
+        }
+
+        private fun checkStatusMediaPlayer(soundRecord: SoundRecord) = with(binding) {
+            if (mediaPlayer?.isPlaying == true && mediaPlayer != null) {
+                btnPlayOrStop.setImageResource(changeImageBtn(false))
+                stopPlaying()
+                return@with
+            }
+            startPlaying(soundRecord.filePath)
+            btnPlayOrStop.setImageResource(changeImageBtn(true))
+            coroutineScope.launch {
+                runSeekBar()
+                btnPlayOrStop.setImageResource(changeImageBtn(false))
+                seekBar.progress = 0
                 tvDuration.text = root.context.getString(
                     R.string.time_format_mm_ss,
-                    TimeUnit.SECONDS.toMinutes(duration.toLong()),
-                    duration % 60
-                )
-                delay(1000)
-                duration--
+                        (soundRecord.duration / 1000) / 60,
+                        (soundRecord.duration / 1000) % 60
+                    )
+            }
+        }
+
+        private fun stopPlaying() {
+            mediaPlayer?.reset()
+            mediaPlayer?.release()
+            mediaPlayer = null
+        }
+
+        private fun startPlaying(filePath: String?) {
+            mediaPlayer = MediaPlayer().apply {
+                try {
+                    setDataSource(filePath)
+                    prepare()
+                    start()
+                } catch (e: IOException) {
+                    Timber.e("$e")
+                }
             }
         }
     }
