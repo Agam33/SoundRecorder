@@ -41,7 +41,9 @@ fun updateFile(
     setChange: (SoundRecord) -> Unit = {}
 ) {
 
-    val mediaDir = application.externalMediaDirs.first()
+    val mediaDir = application.externalMediaDirs.first().let {
+        File(it, application.resources.getString(R.string.file_record))
+    }
 
     val oldFile = File(oldSoundRecord.filePath ?: "")
     val newFile = File(mediaDir, "$newName.mp4")
