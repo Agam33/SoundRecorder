@@ -2,7 +2,7 @@
 
 
 SoundRecorder is an application for record sound. This project uses Service, Room, Coroutines, and Dagger2.
-Let's see what the feature we have 😄 :
+Let's see what the features we have 😄 :
 
 ### Record and Play
 
