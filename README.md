@@ -1,4 +1,21 @@
 # SoundRecorder
+
+
+SoundRecorder is an application for record sound. This project uses Service, Room, Coroutines, and Dagger2.
+Let's see what the feature we have 😄 :
+
+### Record and Play
+
+![Recording](https://media.giphy.com/media/vIYz0DcCuHUE9x4FVs/giphy.gif)    ![Play](https://media.giphy.com/media/bpUI3QGkCPTQvdnRkR/giphy.gif)
+
+### Rename and Delete File
+
+![Rename File](https://media.giphy.com/media/0Ki0DPDapmlkqwOhPW/giphy.gif)    ![Delete File](https://media.giphy.com/media/HEPNdqn9vKuT8itWkd/giphy.gif)
+
+
+
+______________
+
 Copyright (c) <year> <copyright holders>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,5 +35,4 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-  
   
