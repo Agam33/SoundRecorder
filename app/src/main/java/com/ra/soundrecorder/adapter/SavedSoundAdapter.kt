@@ -32,6 +32,7 @@ class SavedSoundAdapter(
             val minutes = (soundRecord.duration / 1000) / 60
             val seconds = (soundRecord.duration / 1000) % 60
 
+            tvDate.text = soundRecord.createdAt
             tvName.text = soundRecord.name
             tvDuration.text = root.context.getString(R.string.time_format_mm_ss, minutes, seconds)
             seekBar.max = soundRecord.duration.toInt()

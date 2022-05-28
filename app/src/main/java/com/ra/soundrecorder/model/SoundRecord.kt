@@ -9,4 +9,5 @@ data class SoundRecord(
     var name: String? = "",
     var duration: Long = 0,
     var filePath: String? = "",
+    var createdAt: String = ""
 ) : Parcelable

@@ -16,6 +16,7 @@ import com.ra.soundrecorder.databinding.FragmentRecorderBinding
 import com.ra.soundrecorder.service.RecordingService
 import com.ra.soundrecorder.service.RecordingService.Companion.START_SERVICE
 import com.ra.soundrecorder.service.RecordingService.Companion.STOP_SERVICE
+import com.ra.soundrecorder.service.RecordingService.Companion.currentTimeService
 import com.ra.soundrecorder.utils.RecordServiceEvent
 import timber.log.Timber
 
@@ -69,16 +70,20 @@ class RecorderFragment : Fragment() {
             is RecordServiceEvent.PLAY -> {
                 isServiceRunning = true
                 binding?.btnMic?.playAnimation()
-                binding?.tvCurrentTimeRecord?.base = SystemClock.elapsedRealtime()
-                binding?.tvCurrentTimeRecord?.start()
+                currentTimeService.observe(viewLifecycleOwner, ::servicePlay)
             }
-            is RecordServiceEvent.STOP -> {
-                isServiceRunning = false
-                binding?.btnMic?.cancelAnimation()
-                binding?.tvCurrentTimeRecord?.base = SystemClock.elapsedRealtime()
-                binding?.tvCurrentTimeRecord?.stop()
-            }
+            is RecordServiceEvent.STOP -> serviceStop()
         }
+    }
+
+    private fun servicePlay(time: String) {
+        binding?.tvCurrentTimeRecord?.text = time
+    }
+
+    private fun serviceStop() {
+        isServiceRunning = false
+        binding?.btnMic?.cancelAnimation()
+        binding?.tvCurrentTimeRecord?.text = getString(R.string.default_record_time)
     }
 
     private fun actionService(action: String) {

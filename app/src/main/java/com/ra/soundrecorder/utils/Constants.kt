@@ -1,12 +1,9 @@
 package com.ra.soundrecorder.utils
 
 import android.app.Application
-import android.content.Context
 import com.ra.soundrecorder.R
 import com.ra.soundrecorder.model.SoundRecord
 import java.io.File
-import java.text.SimpleDateFormat
-import java.util.*
 
 sealed class RecordServiceEvent {
     object PLAY: RecordServiceEvent()
@@ -39,21 +36,22 @@ fun deleteFile(filePath: String) {
 
 fun updateFile(
     newName: String,
-    soundRecord: SoundRecord,
+    oldSoundRecord: SoundRecord,
     application: Application,
     setChange: (SoundRecord) -> Unit = {}
 ) {
 
     val mediaDir = application.externalMediaDirs.first()
 
-    val oldFile = File(soundRecord.filePath ?: "")
+    val oldFile = File(oldSoundRecord.filePath ?: "")
     val newFile = File(mediaDir, "$newName.mp4")
     oldFile.renameTo(newFile)
     val newSoundRecord = SoundRecord(
-        soundRecord.id,
+        oldSoundRecord.id,
         newName,
-        soundRecord.duration,
-        newFile.absolutePath
+        oldSoundRecord.duration,
+        newFile.absolutePath,
+        oldSoundRecord.createdAt
     )
     setChange(newSoundRecord)
 }

@@ -27,6 +27,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.*
 import javax.inject.Inject
 
 @RequiresApi(Build.VERSION_CODES.S)
@@ -96,6 +98,7 @@ class RecordingService: LifecycleService() {
         }
     }
 
+    @SuppressLint("SimpleDateFormat")
     private fun stopRecording() {
         RECORD_SERVICE_EVENT.postValue(RecordServiceEvent.STOP)
         isServiceRunning = false
@@ -104,10 +107,13 @@ class RecordingService: LifecycleService() {
         mediaRecorder?.release()
         mediaRecorder = null
 
+        val currentDateAndTime = SimpleDateFormat("MM-dd-yyyy HH:mm:ss").format(Date())
+
         val soundRecord = SoundRecord(
             name = mFile?.name,
             filePath = mFile?.absolutePath,
-            duration = (System.currentTimeMillis() - mStartingTimeMillis)
+            duration = (System.currentTimeMillis() - mStartingTimeMillis),
+            createdAt = currentDateAndTime
         )
 
         Timber.d("File saved to Path: ${mFile?.path}\n File Name: ${mFile?.name}")
@@ -127,6 +133,7 @@ class RecordingService: LifecycleService() {
                 val minute = second / 60
                 val time = String.format(baseContext.getString(R.string.time_format_mm_ss), minute, second)
                 showNotification(time)
+                CURRENT_TIME_SERVICE.postValue(time)
                 second++
                 delay(1000)
             }
@@ -135,6 +142,7 @@ class RecordingService: LifecycleService() {
 
     private fun showNotification(timeString: String) {
         notificationBuilder
+            .setContentIntent(pendingIntent)
             .setContentTitle(getString(R.string.app_name))
             .setContentText(timeString)
             .setSmallIcon(R.drawable.ic_baseline_surround_sound_24)
@@ -167,8 +175,10 @@ class RecordingService: LifecycleService() {
     }
 
     companion object {
+        private val CURRENT_TIME_SERVICE = MutableLiveData<String>()
         private var RECORD_SERVICE_EVENT = MutableLiveData<RecordServiceEvent>()
         val recordServiceEvent: LiveData<RecordServiceEvent> = RECORD_SERVICE_EVENT
+        val currentTimeService: LiveData<String> = CURRENT_TIME_SERVICE
         const val NOTIFICATION_SERVICE_ID = "service-id"
         const val NOTIFICATION_NAME = "recording-service"
         const val NOTIFY_ID = 10

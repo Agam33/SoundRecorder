@@ -11,4 +11,5 @@ data class SoundRecordEntity(
     val name: String,
     val duration: Long,
     val filePath: String,
+    val createdAt: String,
 )

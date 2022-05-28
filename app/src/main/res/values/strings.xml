@@ -9,4 +9,8 @@
     <string name="default_record_time">00:00</string>
     <string name="txt_play">Play</string>
     <string name="txt_stop">Stop</string>
+    <string name="txt_detail_file">Detail File</string>
+    <string name="txt_file_updated">File Updated</string>
+    <string name="txt_record_deleted">Record Deleted</string>
+    <string name="txt_delete_msg">Are you sure want to delete this record?</string>
 </resources>

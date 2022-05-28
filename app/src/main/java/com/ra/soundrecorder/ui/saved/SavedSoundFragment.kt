@@ -12,6 +12,7 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.ra.soundrecorder.App
+import com.ra.soundrecorder.R
 import com.ra.soundrecorder.adapter.SavedSoundAdapter
 import com.ra.soundrecorder.databinding.FragmentSavedSoundBinding
 import com.ra.soundrecorder.model.SoundRecord
@@ -79,12 +80,12 @@ class SavedSoundFragment : Fragment() {
             Snackbar.make(
                 requireContext(),
                 root,
-                "Are you sure want to delete this record?",
+                getString(R.string.txt_delete_msg),
                 Snackbar.LENGTH_SHORT,
             ).setAction("Yes") {
                 viewModel.deleteItem(soundRecord)
                 deleteFile(soundRecord.filePath ?: "")
-                Toast.makeText(requireContext(), "Record deleted", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.txt_record_deleted), Toast.LENGTH_SHORT).show()
             }.show()
         }
     }

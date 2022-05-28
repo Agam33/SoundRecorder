@@ -10,7 +10,8 @@ object DataMapper {
             soundRecordEntity.id,
             soundRecordEntity.name,
             soundRecordEntity.duration,
-            soundRecordEntity.filePath
+            soundRecordEntity.filePath,
+            soundRecordEntity.createdAt
     )
 
     fun modelToEntity(soundRecord: SoundRecord) =
@@ -18,6 +19,7 @@ object DataMapper {
             id = soundRecord.id,
             name = soundRecord.name ?: "",
             duration = soundRecord.duration,
-            filePath = soundRecord.filePath ?: ""
+            filePath = soundRecord.filePath ?: "",
+            createdAt = soundRecord.createdAt
         )
 }

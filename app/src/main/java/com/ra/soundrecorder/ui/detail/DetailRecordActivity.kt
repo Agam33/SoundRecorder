@@ -27,7 +27,8 @@ class DetailRecordActivity : AppCompatActivity() {
         (application as App).mainComponent.inject(this)
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
-        val soundRecord = intent.getParcelableExtra<SoundRecord>(DETAIL_EXTRA_BUNDLE) as? SoundRecord ?: SoundRecord()
+        supportActionBar?.title = getString(R.string.txt_detail_file)
+        val soundRecord = intent.getParcelableExtra(DETAIL_EXTRA_BUNDLE) as? SoundRecord ?: SoundRecord()
         setupUI(soundRecord)
         setChange(soundRecord)
     }
@@ -37,7 +38,7 @@ class DetailRecordActivity : AppCompatActivity() {
             val newName = edName.text.toString()
             updateFile(newName, soundRecord, application) { newSoundRecord ->
                 viewModel.updateSoundRecord(newSoundRecord)
-                Toast.makeText(this@DetailRecordActivity, "File updated", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@DetailRecordActivity, getString(R.string.txt_file_updated), Toast.LENGTH_SHORT).show()
             }
             finish()
         }
@@ -49,6 +50,7 @@ class DetailRecordActivity : AppCompatActivity() {
         edName.hint = soundRecord.name
         tvDuration.text = getString(R.string.time_format_mm_ss, minutes, seconds)
         tvFilePath.text = soundRecord.filePath
+        tvDate.text = soundRecord.createdAt
     }
 
     companion object {
